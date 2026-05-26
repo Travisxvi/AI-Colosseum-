@@ -3,7 +3,9 @@
 // index.js — Real Swarms backend required. No simulation.
 // ===================================================================
 
-const API = 'http://localhost:5000/api';
+const API = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+  ? 'http://localhost:5000/api'
+  : '/api';
 
 // ===== STATE =====
 const state = {

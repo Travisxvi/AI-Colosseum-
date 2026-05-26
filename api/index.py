@@ -671,6 +671,21 @@ def stream_battle(battle_id: str):
         max_idle_rounds = 240  # 240 × 0.5 s = 2 min timeout (agents can be slow)
         idle_rounds = 0
 
+        # Vercel serverless environment check: start the battle thread in this active request
+        if os.environ.get("VERCEL"):
+            battle = state["battles"].get(battle_id)
+            if battle and battle.get("status") == "pending":
+                bounty = _find_bounty(battle["bounty_id"])
+                gladiator_a = _find_gladiator(battle["gladiator_a"]["id"])
+                gladiator_b = _find_gladiator(battle["gladiator_b"]["id"])
+                if bounty and gladiator_a and gladiator_b:
+                    thread = threading.Thread(
+                        target=_run_battle,
+                        args=(battle_id, bounty, gladiator_a, gladiator_b),
+                        daemon=True,
+                    )
+                    thread.start()
+
         while True:
             logs = battle_logs.get(battle_id, [])
             new_events = logs[sent_index:]
@@ -742,14 +757,16 @@ def health():
 # Static Frontend Serving
 # ---------------------------------------------------------------------------
 
+STATIC_DIR = ".." if os.path.dirname(__file__).endswith("api") or os.path.dirname(__file__).endswith("api/") else "."
+
 @app.route("/")
 def serve_index():
-    return send_from_directory(".", "index.html")
+    return send_from_directory(STATIC_DIR, "index.html")
 
 @app.route("/<path:path>")
 def serve_static(path):
-    if os.path.exists(os.path.join(".", path)):
-        return send_from_directory(".", path)
+    if os.path.exists(os.path.join(STATIC_DIR, path)):
+        return send_from_directory(STATIC_DIR, path)
     return "Not Found", 404
 
 
