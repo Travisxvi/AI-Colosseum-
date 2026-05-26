@@ -50,11 +50,10 @@ pip install -r requirements.txt
 ### 3. Setup Environment variables
 Create a `.env` file in the root directory and add your API keys:
 ```env
-OPENAI_API_KEY=your_swarms_api_key
 SWARMS_API_KEY=your_swarms_api_key
 OPENAI_API_BASE=https://api.swarms.world/v1
 ```
-*Note: The backend is configured to use Swarms' hosted endpoint, so your `OPENAI_API_KEY` should be set to your Swarms API key.*
+*Note: The backend automatically maps your Swarms API key to standard client libraries behind the scenes.*
 
 ### 4. Run the Colosseum
 Start the Flask development server:

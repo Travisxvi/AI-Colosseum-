@@ -18,6 +18,10 @@ from swarms import Agent, ConcurrentWorkflow
 
 load_dotenv()
 
+# Map SWARMS_API_KEY to OPENAI_API_KEY so standard client libraries connect successfully
+if "SWARMS_API_KEY" in os.environ and not os.environ.get("OPENAI_API_KEY"):
+    os.environ["OPENAI_API_KEY"] = os.environ["SWARMS_API_KEY"]
+
 app = Flask(__name__)
 CORS(app)
 
